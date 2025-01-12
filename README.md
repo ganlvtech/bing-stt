@@ -2,7 +2,22 @@
 
 Speech to Text API on bing.com
 
-https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-speech-recognition-results?pivots=programming-language-csharp#speech-synchronization
+API Endpoint: wss://sr.bing.com/opaluqu/speech/recognition/interactive/cognitiveservices/v1
+
+Docs: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-speech-recognition-results?pivots=programming-language-csharp#speech-synchronization
+
+## Usage
+
+```bash
+cargo add bing-stt --git https://github.com/ganlvtech/bing-stt.git
+```
+
+or
+
+```toml
+[dependencies]
+bing-stt = { git = "https://github.com/ganlvtech/bing-stt.git", version = "0.1.0" }
+```
 
 ## Examples
 
