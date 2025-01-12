@@ -152,11 +152,7 @@ impl Session {
         client.send_message(&Message::text(format!("Path: speech.config\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\nContent-Type: application/json\r\n\r\n{}", request_id, get_timestamp(), r#"{"context":{"system":{"name":"SpeechSDK","version":"1.15.0-alpha.0.1","build":"JavaScript","lang":"JavaScript"},"os":{"platform":"Browser/Win32","name":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0","version":"5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"},"audio":{"source":{"bitspersample":16,"channelcount":1,"connectivity":"Unknown","manufacturer":"Speech SDK","model":"Default - Microphone","samplerate":16000,"type":"Microphones"}}},"recognition":"interactive"}"#)))?;
         client.send_message(&Message::text(format!("Path: speech.context\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\nContent-Type: application/json\r\n\r\n{}", request_id, get_timestamp(), "{}")))?;
         let mut buffer = Vec::with_capacity(FLUSH_SIZE);
-        let header = format!(
-            "Path: audio\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\nContent-Type: audio/x-wav\r\n",
-            &request_id,
-            get_timestamp()
-        );
+        let header = format!("Path: audio\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\nContent-Type: audio/x-wav\r\n", &request_id, get_timestamp());
         let header_bytes_len = header.len();
         buffer.push(((header_bytes_len >> 8) & 0xff) as u8);
         buffer.push((header_bytes_len & 0xff) as u8);
@@ -178,14 +174,9 @@ impl Session {
 
     pub fn flush(&mut self) -> anyhow::Result<()> {
         if self.buffer.len() > 0 {
-            self.client
-                .send_message(&Message::binary(self.buffer.clone()))?;
+            self.client.send_message(&Message::binary(self.buffer.clone()))?;
             self.buffer.clear();
-            let header = format!(
-                "Path: audio\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\n",
-                &self.request_id,
-                get_timestamp()
-            );
+            let header = format!("Path: audio\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\n", &self.request_id, get_timestamp());
             let header_bytes_len = header.len();
             self.buffer.push(((header_bytes_len >> 8) & 0xff) as u8);
             self.buffer.push((header_bytes_len & 0xff) as u8);

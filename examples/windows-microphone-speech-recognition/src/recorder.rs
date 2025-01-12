@@ -105,8 +105,7 @@ impl Recorder {
             let com_releaser = ComReleaser::new()?; // CoInitialize 是引用计数的，CoUninitialize 需要与 CoInitialize 个数一致。
             // 说明：windows-rs 封装了所有 IXxx 接口，底层的 IUnknown 实现了 Drop，会自动释放，不需要我们手动调用 Release
             // 但是我们必须将他保存在结构体的字段中，否则，离开当前函数就会被立刻释放了。
-            let enumerator =
-                CoCreateInstance::<_, IMMDeviceEnumerator>(&MMDeviceEnumerator, None, CLSCTX_ALL)?;
+            let enumerator = CoCreateInstance::<_, IMMDeviceEnumerator>(&MMDeviceEnumerator, None, CLSCTX_ALL)?;
             let device = enumerator.GetDefaultAudioEndpoint(eCapture, eConsole)?; // 麦克风录制使用这一行代码
             // let device = enumerator.GetDefaultAudioEndpoint(eRender, eMultimedia)?; // Windows 内录则使用这一行代码
             let audio_client = device.Activate::<IAudioClient>(CLSCTX_ALL, None)?;
@@ -118,14 +117,7 @@ impl Recorder {
             } else {
                 WaveFormat::WAVEFORMATEX(*pwfx)
             };
-            audio_client.Initialize(
-                AUDCLNT_SHAREMODE_SHARED,
-                0,
-                REFTIMES_PER_SEC,
-                0,
-                pwfx,
-                None,
-            )?; // 麦克风录制使用这一行代码
+            audio_client.Initialize(AUDCLNT_SHAREMODE_SHARED, 0, REFTIMES_PER_SEC, 0, pwfx, None)?; // 麦克风录制使用这一行代码
             // audio_client.Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_LOOPBACK, REFTIMES_PER_SEC, 0, pwfx, None)?; // Windows 内录则使用这一行代码
             let capture_client = audio_client.GetService::<IAudioCaptureClient>()?;
             audio_client.Start()?;
@@ -157,13 +149,7 @@ impl Recorder {
             let mut p_data: *mut u8 = null_mut();
             let mut num_frames_to_read = 0;
             let mut dwflags = 0;
-            self.capture_client.GetBuffer(
-                &mut p_data,
-                &mut num_frames_to_read,
-                &mut dwflags,
-                None,
-                None,
-            )?;
+            self.capture_client.GetBuffer(&mut p_data, &mut num_frames_to_read, &mut dwflags, None, None)?;
             if num_frames_to_read > 0 {
                 let block_align = self.wave_format.as_ref().nBlockAlign as usize;
                 let data = slice::from_raw_parts(p_data, num_frames_to_read as usize * block_align);
